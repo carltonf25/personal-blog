@@ -1,24 +1,38 @@
-/**
- * Layout component that queries for data
- * with Gatsby's StaticQuery component
- *
- * See: https://www.gatsbyjs.org/docs/static-query/
- */
-
 import React from "react"
 import PropTypes from "prop-types"
-import { StaticQuery, graphql } from "gatsby"
+import styled from 'styled-components';
+import { StaticQuery, graphql, Link } from "gatsby"
+import { Spring } from 'react-spring';
 
 import Header from "./header"
+import Archive from "./archive"
+import Img from 'gatsby-image';
 import "./layout.css"
 
-const Layout = ({ children }) => (
+const MainLayout = styled.main`
+  max-width: 90%;
+  margin: 1rem auto;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-gap: 40px;
+`
+
+const Layout = ({ children, location }) => (
   <StaticQuery
     query={graphql`
-      query SiteTitleQuery {
+        query SiteTitleQuery {
         site {
           siteMetadata {
             title
+          }
+        }
+        file(relativePath:{
+          regex:"/logo/"
+        }) {
+          childImageSharp {
+            fluid(maxWidth: 1000) {
+              ...GatsbyImageSharpFluid_tracedSVG
+            }
           }
         }
       }
@@ -26,21 +40,10 @@ const Layout = ({ children }) => (
     render={data => (
       <>
         <Header siteTitle={data.site.siteMetadata.title} />
-        <div
-          style={{
-            margin: `0 auto`,
-            maxWidth: 960,
-            padding: `0px 1.0875rem 1.45rem`,
-            paddingTop: 0,
-          }}
-        >
-          <main>{children}</main>
-          <footer>
-            © {new Date().getFullYear()}, Built with
-            {` `}
-            <a href="https://www.gatsbyjs.org">Gatsby</a>
-          </footer>
-        </div>
+        <MainLayout>
+          <div>{children}</div>
+          <Archive />
+        </MainLayout>
       </>
     )}
   />
@@ -48,6 +51,9 @@ const Layout = ({ children }) => (
 
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
+}
+Layout.defaultProps= {
+  location: {},
 }
 
 export default Layout
